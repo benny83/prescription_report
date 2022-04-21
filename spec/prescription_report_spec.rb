@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'prescription_report'
 
 describe PrescriptionReport do
@@ -44,6 +46,13 @@ describe PrescriptionReport do
           'Bob: 0 fills $0 income'
         ]
       end
+
+      it { is_expected.to eq(expected_result) }
+    end
+
+    context 'given example without created' do
+      let(:filename) { 'example_4.txt' }
+      let(:expected_result) { [] }
 
       it { is_expected.to eq(expected_result) }
     end

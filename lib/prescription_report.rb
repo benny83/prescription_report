@@ -1,10 +1,8 @@
+# frozen_string_literal: true
+
 class PrescriptionReport
-  EVENTS = {
-    created: 'created',
-    filled: 'filled',
-    returned: 'returned'
-  }.freeze
-  CURRENCY = '$'.freeze
+  EVENTS = { created: 'created', filled: 'filled', returned: 'returned' }.freeze
+  CURRENCY = '$'
   FILLING_COST = 5
   RETURNING_COST = 1
 
@@ -30,18 +28,19 @@ class PrescriptionReport
   end
 
   def merge_events(grouped_data)
-    filtered_data.merge!(*grouped_data) { |_, prev, val| Array(prev) << val }
+    grouped_data.each_with_object(filtered_data) do |pair, memo|
+      memo[pair.keys.first] ||= []
+      memo[pair.keys.first] << pair.values.first
+    end
   end
 
   def skip_incomplete_data
     filtered_data.each do |patient, event|
-      next if event =~ /#{EVENTS[:filled]}|#{EVENTS[:returned]}/
+      next unless event.include?(EVENTS[:created])
 
       report[patient.split.first] ||= []
-      next if event == EVENTS[:created]
-
-      first_filling_index = event.index(EVENTS[:created]) + 1
-      report[patient.split.first] += event.drop(first_filling_index)
+      created_index = event.index(EVENTS[:created])
+      report[patient.split.first] += event.drop(created_index)
     end
   end
 
@@ -50,7 +49,7 @@ class PrescriptionReport
       fills = events.count(EVENTS[:filled]) - events.count(EVENTS[:returned])
 
       income = fills * FILLING_COST - events.count(EVENTS[:returned]) * RETURNING_COST
-      income = income.to_s.insert(income.negative? ? 1 : 0, CURRENCY) 
+      income = income.to_s.insert(income.negative? ? 1 : 0, CURRENCY)
 
       "#{patient_name}: #{fills} fills #{income} income"
     end
