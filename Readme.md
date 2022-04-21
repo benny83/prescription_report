@@ -10,7 +10,7 @@ Ruby version used 3.1.0
 
 Clone this repo, go to the project folder, run `bundle install` and then `./generate_report.rb {path_to_file}` (or also `ruby generate_report.rb {path_to_file}`).
 
-If you want to see detailed info, add `-d` (`--details`) flag, for example `./generate_report.rb sample.txt --details`.
+If you want to see detailed info, add `-d` (`--details`) flag, for example `./generate_report.rb public/sample.txt --details`.
 
 
 ## Developer comment:
